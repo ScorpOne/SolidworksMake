@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+                <script src="c:\\Program Files\\nodejs\\node_modules\\npm\\node_modules\\socket.io-client\\socket.io.js"></script>
+		<script type="text/javascript">
+                    function socketConnect() {
+		      var socket = io("http://127.0.0.1:8124/");
+		      socket.on("news", function (data) {
+		        console.log(data);
+		        socket.emit("my other event", { my: "data" });	
+                      });
+		      socket.on("onUrl", function (data) {
+			if ("url" in data) {
+    			  window.location.assign(data["url"]);
+                        }
+                      });
+                    }
+		</script>
+	</head>
+	<body>
+		<input type="button" value="Generate Token" onclick="socketConnect()">
+	</body>
+</html>
