@@ -26,12 +26,12 @@ var solidWorks = solidWorks || {};
             if ('stl' in paramDict) {
                 action += paramDict['stl'];
             }
-            reloadWithToken(action, true);
+            solidWorks.relocation.reloadWithToken(action, true);
         },
 
 
         addTokenToAction: function(form) {
-            form.action = reloadWithToken(form.action, false);
+            form.action = solidWorks.relocation.reloadWithToken(form.action, false);
         },
 
 
@@ -41,7 +41,7 @@ var solidWorks = solidWorks || {};
             if ('token' in paramDict) {
                 localStorage['token'] = paramDict['token'];
             }
-            reloadWithToken('/static/html/index.html', true);
+            solidWorks.relocation.reloadWithToken('/static/html/index.html', true);
         }
     };
 })()
