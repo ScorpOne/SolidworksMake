@@ -21,7 +21,7 @@ var solidWorks = solidWorks || {};
 
 
         stlDownload: function() {
-            var action = modelPath;
+            var action = solidWorks.relocation.modelPath;
             var paramDict = getUrlVars(window.location.href);
             if ('stl' in paramDict) {
                 action += paramDict['stl'];
