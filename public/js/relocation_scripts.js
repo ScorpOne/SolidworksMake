@@ -22,7 +22,7 @@ var solidWorks = solidWorks || {};
 
         stlDownload: function() {
             var action = solidWorks.relocation.modelPath;
-            var paramDict = getUrlVars(window.location.href);
+            var paramDict = solidWorks.urlParams.getUrlVars(window.location.href);
             if ('stl' in paramDict) {
                 action += paramDict['stl'];
             }
@@ -37,7 +37,7 @@ var solidWorks = solidWorks || {};
 
         saveTokenAndReload: function() {
             alert('save token and reload');
-            var paramDict = getUrlVars(window.location.href);
+            var paramDict = solidWorks.urlParams.getUrlVars(window.location.href);
             if ('token' in paramDict) {
                 localStorage['token'] = paramDict['token'];
             }
