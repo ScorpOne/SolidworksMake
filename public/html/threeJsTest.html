@@ -6,8 +6,12 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 	</head>
-	<body>
+	<body onmousedown="solidWorks.windowEventWrapper.onMouseEvent(event, 'Down');" 
+	      onmouseup="solidWorks.windowEventWrapper.onMouseEvent(event, 'Up');">
 		<div id="info">
+                        <input type="button" value="PAN mode off" 
+			onclick="solidWorks.windowEventWrapper.onPanClick(this);">
+	                <div id="mouse_coordinate"> 0-0 </div>
 			<a href="http://threejs.org" target="_blank">three.js</a> -
 			STL loader test by <a href="https://github.com/aleeper">aleeper</a>. PR2 head from <a href="http://www.ros.org/wiki/pr2_description">www.ros.org</a>
 			<br>
