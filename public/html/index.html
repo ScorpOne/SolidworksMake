@@ -3,6 +3,10 @@
 	<head>
 		<script src="/static/js/relocation_scripts.js"></script>
 	</head>
-	<body onLoad="solidWorks.relocation.reloadWithToken('/static/html/form.html', true);">
+	<body>
+		<input type="button" value="Upload Form"
+                 onclick="solidWorks.relocation.reloadWithToken('/static/html/form.html', true);">
+		<input type="button" value="Registration Form"
+                 onclick="solidWorks.relocation.reloadWithToken('/static/html/registration.html', true);">
 	</body>
 </html>

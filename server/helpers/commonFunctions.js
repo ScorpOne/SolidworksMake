@@ -11,6 +11,19 @@ var serverPaths = require(pathToRoot + 'server/paths.js');
 var urlDefault = '/';
 var urlUpload = '/upload';
 
+
+// checkLastSubstr function - check str2 string as tail of str1
+// return true/false
+function checkLastSubstr(str1, str2) {
+    var ret = false;
+    var pos = str1.lastIndexOf(str2);
+    if (pos >= 0 && pos == (str1.length - str2.length)) {
+        ret = true;
+    }
+    return ret;
+}
+
+
 // checkFileExist function - just check is file exists or isn't
 // return true/false
 function checkFileExist(fName, accessMode) {
@@ -84,22 +97,30 @@ exports.responseFile = function(fPath, urlPath, response, cType, replaceMacros) 
 // checkToken function checks "token" urls param for some urls which
 // pathname finished by substrings from tokenUrlPathes list
 exports.checkToken = function(url, urlObj) {
-    var ret = true;
+    var ret = false;
     var tokenUrlPathes = [urlDefault, urlUpload, '.html', '.htm', '.stl'];
+    var tokenUrlPathesExcludes = ['index.html'];
     if (!urlObj) {
-      urlObj = urlParser.parse(url, true);
+        urlObj = urlParser.parse(url, true);
     } 
     var urlPath = urlObj['pathname'];
 
-    for (var i=0; i < tokenUrlPathes.length; i++) {
-      var pos = urlPath.lastIndexOf(tokenUrlPathes[i]);
-      //console.log(">>> token pos = " + pos);
-      if (pos >= 0 && pos == (urlPath.length - tokenUrlPathes[i].length)) {
-        if (!('query' in urlObj && 'token' in urlObj['query'])) {
-          ret = false;
+    for (var i=0; i < tokenUrlPathesExcludes.length; i++) {
+        if (checkLastSubstr(urlPath, tokenUrlPathesExcludes[i])) {
+            ret = true;
+            break;
         }
-        break;
-      } 
+    }
+    if (!ret) {
+        ret = true;
+        for (var i=0; i < tokenUrlPathes.length; i++) {
+            if (checkLastSubstr(urlPath, tokenUrlPathes[i])) {
+                if (!('query' in urlObj && 'token' in urlObj['query'])) {
+                    ret = false;
+                }
+                break;
+            } 
+        }
     }
     console.log('>>> check token result = ' + ret);
     return ret;
