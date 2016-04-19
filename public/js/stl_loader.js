@@ -7,72 +7,11 @@ var solidWorks = solidWorks || {};
 
     'use strict';
  
-    solidWorks.windowEventWrapper = {
-        startOver: false,
-        prevCoordinates: {'x': 0, 'y': 0},
-        cameraOffsetMutiplier: 50,
-        
-        onPanClick: function(button) {
-            var sceneModes = solidWorks.stlLoader.sceneModes;
-
-            if (solidWorks.stlLoader.currentMode == sceneModes.PAN) {
-                solidWorks.stlLoader.currentMode = sceneModes.INIT;
-                button.value = 'PAN mode off';
-            } else if (solidWorks.stlLoader.currentMode == sceneModes.INIT) {
-                solidWorks.stlLoader.currentMode = sceneModes.PAN;
-                button.value = 'PAN mode on';
-            }
-        },
-
-
-	onMouseEvent: function(event, eventText) {
-            var startOver = solidWorks.windowEventWrapper.startOver;
-            var prevCoordinates = solidWorks.windowEventWrapper.prevCoordinates;
-
-            if (eventText == 'Down') {
-                solidWorks.windowEventWrapper.startOver = true;
-                prevCoordinates['x'] = Math.floor(event.clientX);
-                prevCoordinates['y'] = Math.floor(event.clientY);
-            } else if (eventText == 'Up') {
-                solidWorks.windowEventWrapper.startOver = false;
-            };
-
-        },
-
-	onMouseOverEvent: function(event) {
-            var startOver = solidWorks.windowEventWrapper.startOver;
-            var cameraOffsetMutiplier = solidWorks.windowEventWrapper.cameraOffsetMutiplier;
-            var prevCoordinates = solidWorks.windowEventWrapper.prevCoordinates;
-            var cameraPosOffset = solidWorks.stlLoader.cameraPosOffset; 
-            var currentMode = solidWorks.stlLoader.currentMode;
-            var sceneModes = solidWorks.stlLoader.sceneModes;
-
-            if (startOver && currentMode == sceneModes.PAN) {
-                var divEvent = document.getElementById('mouse_coordinate');
-                if (divEvent) {
-                    cameraPosOffset['x'] = 
-                    (event.clientX - prevCoordinates['x']) / cameraOffsetMutiplier;
-                    // oops!!! scene x-coordinate reverse for window x-coordinate
-                    cameraPosOffset['x'] *= -1;
-                    cameraPosOffset['y'] = 
-                    (event.clientY - prevCoordinates['y']) / cameraOffsetMutiplier;
-                      
-                    prevCoordinates['x'] = event.clientX;
-                    prevCoordinates['y'] = event.clientY;
-                    divEvent.innerText = Math.floor(event.clientX) + '-' + Math.floor(event.clientY);
-                    
-                }
-            }
-
-        } 
-
-    };
-
     solidWorks.stlLoader = {
 
-        sceneModes: {INIT: 0, PAN: 1},
+        sceneModes: {INIT: 0, PAN: 1, ZOOM: 2, LEN: 3},
         modelPath: '/models/',
-        cameraPosOffset: {'x': 0, 'y': 0},
+        cameraPosOffset: {'x': 0, 'y': 0, 'z': 0},
         //currentMode: solidWorks.stlLoader.sceneModes.INIT,
 	currentMode: 0,
 
@@ -211,24 +150,45 @@ var solidWorks = solidWorks || {};
         },
 
 
-        render: function() {
-
-            var cameraPosOffset = solidWorks.stlLoader.cameraPosOffset;
-            var timer = Date.now() * 0.0005;
-
+        panning: function(cameraPosOffset) {
             camera.position.x = camera.position.x + cameraPosOffset['x'];
             camera.position.y = camera.position.y + cameraPosOffset['y'];
             cameraTarget.x = cameraTarget.x + cameraPosOffset['x'];
             cameraTarget.y = cameraTarget.y + cameraPosOffset['y'];
+        },
+                                                                   
+
+	zooming: function(yOffset) {
+            var lP = {x: camera.position.x, y: camera.position.y, z: camera.position.z};
+            var vN = {x: lP.x - cameraTarget.x, y: lP.y - cameraTarget.y, z: lP.z - cameraTarget.z};
+            var len = Math.abs(yOffset);
+            var K = Math.sqrt(Math.pow(len, 2) / (Math.pow(vN.x, 2) + Math.pow(vN.y, 2) + 
+                                                      Math.pow(vN.z, 2)));
+            if (yOffset < 0) {
+                K *= -1;
+            }
+                
+            camera.position.x = vN.x * K + lP.x;
+            camera.position.y = vN.y * K + lP.y;
+            camera.position.z = vN.z * K + lP.z;
+        },
+
+
+        render: function() {
+
+            var cameraPosOffset = solidWorks.stlLoader.cameraPosOffset;
+            var currentMode = solidWorks.stlLoader.currentMode;
+            var sceneModes = solidWorks.stlLoader.sceneModes;
+            var timer = Date.now() * 0.0005;
+
+            if (currentMode == sceneModes.PAN) {
+                solidWorks.stlLoader.panning(cameraPosOffset);
+            } else if (currentMode == sceneModes.ZOOM && cameraPosOffset['y'] != 0) {
+                solidWorks.stlLoader.zooming(cameraPosOffset['y']);
+            }
             cameraPosOffset['x'] = 0;
             cameraPosOffset['y'] = 0;
-            /*
-
-            camera.position.x = 2;
-            camera.position.y = 1;
-            camera.position.z = 0;// + Math.sin( timer );
-            cameraTarget.z = camera.position.z
-            */
+            cameraPosOffset['z'] = 0;
              
             camera.lookAt( cameraTarget );
 

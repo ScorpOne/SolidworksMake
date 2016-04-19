@@ -9,8 +9,8 @@
 	<body onmousedown="solidWorks.windowEventWrapper.onMouseEvent(event, 'Down');" 
 	      onmouseup="solidWorks.windowEventWrapper.onMouseEvent(event, 'Up');">
 		<div id="info">
-                        <input type="button" value="PAN mode off" 
-			onclick="solidWorks.windowEventWrapper.onPanClick(this);">
+                        <input type="button" value="INIT mode" 
+			onclick="solidWorks.windowEventWrapper.onModeClick(this);">
 	                <div id="mouse_coordinate"> 0-0 </div>
 			<a href="http://threejs.org" target="_blank">three.js</a> -
 			STL loader test by <a href="https://github.com/aleeper">aleeper</a>. PR2 head from <a href="http://www.ros.org/wiki/pr2_description">www.ros.org</a>
@@ -31,6 +31,7 @@
 		<script src="/threeJs/examples/js/libs/stats.min.js"></script>
 
 		<script src="/static/js/relocation_scripts.js"></script>
+		<script src="/static/js/window_events_wrapper.js"></script>
 		<script src="/static/js/url_param_parse.js"></script>
 		<script src="/static/js/stl_loader.js"></script>
 
