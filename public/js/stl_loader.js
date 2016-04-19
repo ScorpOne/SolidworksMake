@@ -161,16 +161,18 @@ var solidWorks = solidWorks || {};
 	zooming: function(yOffset) {
             var lP = {x: camera.position.x, y: camera.position.y, z: camera.position.z};
             var vN = {x: lP.x - cameraTarget.x, y: lP.y - cameraTarget.y, z: lP.z - cameraTarget.z};
-            var len = Math.abs(yOffset);
-            var K = Math.sqrt(Math.pow(len, 2) / (Math.pow(vN.x, 2) + Math.pow(vN.y, 2) + 
+            if (vN.x != 0 || vN.y != 0 || vN.z != 0) {
+                var len = Math.abs(yOffset);
+                var K = Math.sqrt(Math.pow(len, 2) / (Math.pow(vN.x, 2) + Math.pow(vN.y, 2) + 
                                                       Math.pow(vN.z, 2)));
-            if (yOffset < 0) {
-                K *= -1;
-            }
+                if (yOffset < 0) {
+                    K *= -1;
+                }
                 
-            camera.position.x = vN.x * K + lP.x;
-            camera.position.y = vN.y * K + lP.y;
-            camera.position.z = vN.z * K + lP.z;
+                camera.position.x = vN.x * K + lP.x;
+                camera.position.y = vN.y * K + lP.y;
+                camera.position.z = vN.z * K + lP.z;
+            }
         },
 
 
