@@ -184,9 +184,9 @@ var solidWorks = solidWorks || {};
                 divEvent.innerText = vN.x + ' - ' + vN.y + ' - ' + vN.z;
             }
             if (cameraPosOffset['x'] != 0) {
-                var xMulti = vN.z > 0 ? 1: -1;
-                var xzCoof = vN.x / (vN.x + vN.z);
-                var zxCoof = vN.z / (vN.x + vN.z);
+                var xMulti = 1;
+                var xzCoof = vN.x / (Math.abs(vN.x) + Math.abs(vN.z));
+                var zxCoof = vN.z / (Math.abs(vN.x) + Math.abs(vN.z));
                 camera.position.x = camera.position.x + zxCoof * cameraPosOffset['x'] * xMulti;
                 camera.position.z = camera.position.z + xzCoof * cameraPosOffset['x'] * xMulti * -1;
                 cameraTarget.x = cameraTarget.x + zxCoof * cameraPosOffset['x'] * xMulti;
