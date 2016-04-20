@@ -9,11 +9,14 @@ var solidWorks = solidWorks || {};
  
     solidWorks.stlLoader = {
 
-        sceneModes: {INIT: 0, PAN: 1, ZOOM: 2, LEN: 3},
+        sceneModes: {INIT: 0, PAN: 1, ZOOM: 2, ROT:3, LEN: 4},
         modelPath: '/models/',
         cameraPosOffset: {'x': 0, 'y': 0, 'z': 0},
-        //currentMode: solidWorks.stlLoader.sceneModes.INIT,
 	currentMode: 0,
+        defaultCamera: {'x': 0, 'y': 1, 'z': 3},
+        defaultCameraTarget: {'x': 0, 'y': 0, 'z': 0},      
+        circle: false,
+        radian: 0,
 
         init: function() {
             var addShadowedLight = solidWorks.stlLoader.addShadowedLight;
@@ -105,6 +108,7 @@ var solidWorks = solidWorks || {};
 
         },
 
+
         addShadowedLight: function(x, y, z, color, intensity ) {
 
             var directionalLight = new THREE.DirectionalLight( color, intensity );
@@ -140,6 +144,20 @@ var solidWorks = solidWorks || {};
         },
 
 
+        setCameraToDefault: function () {
+            var defaultCamera = solidWorks.stlLoader.defaultCamera;
+            var defaultCameraTarget = solidWorks.stlLoader.defaultCameraTarget;
+            
+            camera.position.x = defaultCamera.x;
+            camera.position.y = defaultCamera.y;
+            camera.position.z = defaultCamera.z;
+            cameraTarget.x = defaultCameraTarget.x;
+            cameraTarget.y = defaultCameraTarget.y;
+            cameraTarget.z = defaultCameraTarget.z;
+            solidWorks.stlLoader.radian = 0;
+        },
+
+
         animate: function() {
             var render = solidWorks.stlLoader.render;
             window.requestAnimationFrame( solidWorks.stlLoader.animate );
@@ -151,10 +169,31 @@ var solidWorks = solidWorks || {};
 
 
         panning: function(cameraPosOffset) {
-            camera.position.x = camera.position.x + cameraPosOffset['x'];
-            camera.position.y = camera.position.y + cameraPosOffset['y'];
-            cameraTarget.x = cameraTarget.x + cameraPosOffset['x'];
-            cameraTarget.y = cameraTarget.y + cameraPosOffset['y'];
+            var lP = {x: camera.position.x, y: camera.position.y, z: camera.position.z};
+            var vN = {x: lP.x - cameraTarget.x, y: lP.y - cameraTarget.y, z: lP.z - cameraTarget.z};
+
+            var divEvent = document.getElementById('mouse_coordinate');
+            if (divEvent) {
+                divEvent.innerText = vN.x + ' - ' + vN.y + ' - ' + vN.z;
+            }
+            if (cameraPosOffset['x'] != 0) {
+                var xzCoof =  vN.x / (vN.x + vN.z);
+                var zxCoof =  vN.z / (vN.x + vN.z);
+                camera.position.x = camera.position.x + zxCoof * cameraPosOffset['x'];
+                camera.position.z = camera.position.z + xzCoof * cameraPosOffset['x'] * -1;
+                cameraTarget.x = cameraTarget.x + zxCoof * cameraPosOffset['x'];
+                cameraTarget.z = cameraTarget.z + xzCoof * cameraPosOffset['x'] * -1;
+
+            }
+            if (cameraPosOffset['y'] != 0) {
+                var yzCoof =  vN.y / (vN.y + vN.z);
+                var zyCoof =  vN.z / (vN.y + vN.z);
+                camera.position.y = camera.position.y + zyCoof * cameraPosOffset['y'];
+                camera.position.z = camera.position.z + yzCoof * cameraPosOffset['y'] * -1;
+                cameraTarget.y = cameraTarget.y + zyCoof * cameraPosOffset['y'];
+                cameraTarget.z = cameraTarget.z + yzCoof * cameraPosOffset['y'] * -1;
+            }
+
         },
                                                                    
 
@@ -176,6 +215,34 @@ var solidWorks = solidWorks || {};
         },
 
 
+        rotation: function(xOffset, yOffset) {
+            var lP = {x: camera.position.x, y: camera.position.y, z: camera.position.z};
+            var radius = Math.sqrt(Math.pow((lP.x - cameraTarget.x), 2) + 
+                                   Math.pow((lP.z - cameraTarget.z), 2));
+            if (xOffset != 0 && radius > 0) {
+                
+                
+                var cosDiff = (2 * Math.pow(radius, 2) - xOffset * xOffset) / (2 * Math.pow(radius, 2));
+                if (xOffset > 0) {
+                    solidWorks.stlLoader.radian += Math.acos(cosDiff);
+                } else {
+                    solidWorks.stlLoader.radian -= Math.acos(cosDiff);
+                }
+
+                var cosA = Math.cos(solidWorks.stlLoader.radian);
+                var sinA = Math.sin(solidWorks.stlLoader.radian);
+                var divEvent = document.getElementById('mouse_coordinate');
+                if (divEvent) {
+                    divEvent.innerText = solidWorks.stlLoader.radian + ' : ' + Math.acos(cosDiff);
+                }
+                camera.position.x = (radius * sinA) + cameraTarget.x;
+                camera.position.z = (radius * cosA) + cameraTarget.z;
+
+            }
+
+        },
+         
+
         render: function() {
 
             var cameraPosOffset = solidWorks.stlLoader.cameraPosOffset;
@@ -187,6 +254,9 @@ var solidWorks = solidWorks || {};
                 solidWorks.stlLoader.panning(cameraPosOffset);
             } else if (currentMode == sceneModes.ZOOM && cameraPosOffset['y'] != 0) {
                 solidWorks.stlLoader.zooming(cameraPosOffset['y']);
+            } else if (currentMode == sceneModes.ROT && (cameraPosOffset['x'] != 0 || 
+                                                         cameraPosOffset['y'] != 0)) {
+                solidWorks.stlLoader.rotation(cameraPosOffset['x'], cameraPosOffset['y']);
             }
             cameraPosOffset['x'] = 0;
             cameraPosOffset['y'] = 0;

@@ -11,7 +11,7 @@ var solidWorks = solidWorks || {};
         startOver: false,
         prevCoordinates: {'x': 0, 'y': 0},
         cameraOffsetMutiplier: 50,
-        sceneModesNames: ['INIT mode', 'PAN mode', 'ZOOM mode'],
+        sceneModesNames: ['INIT mode', 'PAN mode', 'ZOOM mode', 'ROTATION mode'],
         
         onModeClick: function(button) {
             var sceneModes = solidWorks.stlLoader.sceneModes;
@@ -49,7 +49,8 @@ var solidWorks = solidWorks || {};
             var sceneModes = solidWorks.stlLoader.sceneModes;
 
             if (startOver) {
-                if (currentMode == sceneModes.PAN || currentMode == sceneModes.ZOOM) {
+                if (currentMode == sceneModes.PAN || currentMode == sceneModes.ZOOM ||
+                    currentMode == sceneModes.ROT) {
                     var divEvent = document.getElementById('mouse_coordinate');
                     if (divEvent) {
                         cameraPosOffset['x'] = 
