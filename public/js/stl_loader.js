@@ -169,29 +169,27 @@ var solidWorks = solidWorks || {};
 
 
         panning: function(cameraPosOffset) {
-            var lP = {x: camera.position.x, y: camera.position.y, z: camera.position.z};
-            var vN = {x: lP.x - cameraTarget.x, y: lP.y - cameraTarget.y, z: lP.z - cameraTarget.z};
+            var vN = {x: camera.position.x - cameraTarget.x, y: camera.position.y - cameraTarget.y, 
+                      z: camera.position.z - cameraTarget.z};
 
             var divEvent = document.getElementById('mouse_coordinate');
             if (divEvent) {
                 divEvent.innerText = vN.x + ' - ' + vN.y + ' - ' + vN.z;
             }
             if (cameraPosOffset['x'] != 0) {
-                var xzCoof =  vN.x / (vN.x + vN.z);
-                var zxCoof =  vN.z / (vN.x + vN.z);
-                camera.position.x = camera.position.x + zxCoof * cameraPosOffset['x'];
-                camera.position.z = camera.position.z + xzCoof * cameraPosOffset['x'] * -1;
-                cameraTarget.x = cameraTarget.x + zxCoof * cameraPosOffset['x'];
-                cameraTarget.z = cameraTarget.z + xzCoof * cameraPosOffset['x'] * -1;
+                var xMulti = vN.z > 0 ? 1: -1;
+                var xzCoof = vN.x / (vN.x + vN.z);
+                var zxCoof = vN.z / (vN.x + vN.z);
+                camera.position.x = camera.position.x + zxCoof * cameraPosOffset['x'] * xMulti;
+                camera.position.z = camera.position.z + xzCoof * cameraPosOffset['x'] * xMulti * -1;
+                cameraTarget.x = cameraTarget.x + zxCoof * cameraPosOffset['x'] * xMulti;
+                cameraTarget.z = cameraTarget.z + xzCoof * cameraPosOffset['x'] * xMulti * -1;
 
             }
             if (cameraPosOffset['y'] != 0) {
-                var yzCoof =  vN.y / (vN.y + vN.z);
-                var zyCoof =  vN.z / (vN.y + vN.z);
-                camera.position.y = camera.position.y + zyCoof * cameraPosOffset['y'];
-                camera.position.z = camera.position.z + yzCoof * cameraPosOffset['y'] * -1;
-                cameraTarget.y = cameraTarget.y + zyCoof * cameraPosOffset['y'];
-                cameraTarget.z = cameraTarget.z + yzCoof * cameraPosOffset['y'] * -1;
+                camera.position.y = camera.position.y + cameraPosOffset['y'];
+                cameraTarget.y = cameraTarget.y + cameraPosOffset['y'];
+
             }
 
         },
