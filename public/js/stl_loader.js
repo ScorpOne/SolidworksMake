@@ -17,6 +17,7 @@ var solidWorks = solidWorks || {};
         defaultCameraTarget: {'x': 0, 'y': 0, 'z': 0},      
         circle: false,
         radian: 0,
+        mesh: null,
 
         init: function() {
             var addShadowedLight = solidWorks.stlLoader.addShadowedLight;
@@ -63,16 +64,17 @@ var solidWorks = solidWorks || {};
 
                 var material = new THREE.MeshPhongMaterial( { color: 0xff5533, 
                                                             specular: 0x111111, shininess: 200 } );
-                var mesh = new THREE.Mesh( geometry, material );
+                //var mesh = new THREE.Mesh( geometry, material );
+                solidWorks.stlLoader.mesh = new THREE.Mesh(geometry, material);
 
-                mesh.position.set( 0.0, 0 , 0 );
-                mesh.rotation.set( 0, 0, 0 );
-                mesh.scale.set( 0.1, 0.1, 0.1 );
+                solidWorks.stlLoader.mesh.position.set(0, 0, 0);
+                solidWorks.stlLoader.mesh.rotation.set(0, 0, 0);
+                solidWorks.stlLoader.mesh.scale.set(0.1, 0.1, 0.1);
 
-                mesh.castShadow = true;
-                mesh.receiveShadow = true;
+                solidWorks.stlLoader.mesh.castShadow = true;
+                solidWorks.stlLoader.mesh.receiveShadow = true;
 
-                scene.add( mesh );
+                scene.add(solidWorks.stlLoader.mesh);
 
             });
 
@@ -168,6 +170,11 @@ var solidWorks = solidWorks || {};
         },
 
 
+        distanceCalc: function(p0, p1) {
+            return Math.sqrt(Math.pow(p1.x-p0.x, 2) +  Math.pow(p1.y-p0.y, 2) + Math.pow(p1.z-p0.z, 2));
+        },
+
+         
         panning: function(cameraPosOffset) {
             var vN = {x: camera.position.x - cameraTarget.x, y: camera.position.y - cameraTarget.y, 
                       z: camera.position.z - cameraTarget.z};
@@ -210,6 +217,32 @@ var solidWorks = solidWorks || {};
                 camera.position.y = vN.y * K + lP.y;
                 camera.position.z = vN.z * K + lP.z;
             }
+        },
+
+
+        zoomingFit: function() {
+            var mesh = solidWorks.stlLoader.mesh;
+            var bbox = new THREE.BoundingBoxHelper(mesh, 0xff0000);
+            bbox.update();
+            //scene.add(bbox);
+            var centerPoint = bbox.box.center();
+            var pDiff = {x: centerPoint.x - cameraTarget.x, y: centerPoint.y - cameraTarget.y,
+                         z: centerPoint.z - cameraTarget.z};
+            cameraTarget.x = centerPoint.x;
+            cameraTarget.y = centerPoint.y;
+            cameraTarget.z = centerPoint.z;
+            camera.position.x += pDiff.x;
+            camera.position.y += pDiff.y;
+            camera.position.z += pDiff.z; 
+
+            var boundaryRadius = solidWorks.stlLoader.distanceCalc(centerPoint, bbox.box.max);
+            var fov = camera.fov * (Math.PI/180); 
+
+            // Calculate the camera distance
+            var distance = Math.abs(boundaryRadius / Math.sin(fov/2));
+
+            solidWorks.stlLoader.zooming((solidWorks.stlLoader.distanceCalc(cameraTarget, camera.position) - 
+                                          distance) * -1);
         },
 
 
