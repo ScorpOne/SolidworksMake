@@ -6,6 +6,7 @@ var serverPaths = require(pathToRoot + 'server/paths.js');
 var clientPaths = require(pathToRoot + 'public/paths.js');
 var commonFuncs = require(pathToRoot + serverPaths.helpers.commonFuncs);
 var redisFuncs = require(pathToRoot + serverPaths.helpers.redisFuncs);
+var mongoController = require(pathToRoot + serverPaths.controllers.mongo);
 
 var notFoundBody = '<!DOCTYPE html><html><body> your request not service by our server</body></html>';
 
@@ -20,7 +21,9 @@ module.exports = {
         }
     },
 
+
     modelRequestProcessing: function(request, response, next){
+        console.log('getModels ' + request.url);
         if (commonFuncs.checkToken(request.url)) {
             next();
         } else {
@@ -28,6 +31,7 @@ module.exports = {
             response.end('');
         }
     },
+
 
     useRedis: function(request, response, next){
         urlObj = urlParser.parse(request.url, false);
@@ -45,10 +49,12 @@ module.exports = {
         }
     },
 
+
     getRoot: function(request, response){
         console.log('getRoot ' + request.url);
         commonGetRequest(request, response, '', pathToRoot + clientPaths.clientHtmlPath + 'index.html');
     },
+
 
     getAll: function(request, response){
         console.log('getAll ' + request.url);
@@ -56,8 +62,9 @@ module.exports = {
         response.end(notFoundBody);
     },
 
+
     postUpload: function(request, response){
         console.log('post ' + request.url);
-        commonFuncs.uploadHandler(request, response);
+        var uploadResult = commonFuncs.uploadHandler(request, response, mongoController.mongoInserRequest);
     }
 };

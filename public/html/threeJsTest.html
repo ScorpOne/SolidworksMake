@@ -7,8 +7,31 @@
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 	</head>
 	<body onmousedown="solidWorks.windowEventWrapper.onMouseEvent(event, 'Down');" 
-	      onmouseup="solidWorks.windowEventWrapper.onMouseEvent(event, 'Up');">
+	      onmouseup="solidWorks.windowEventWrapper.onMouseEvent(event, 'Up');"
+              onload="solidWorks.relocation.extendSelect(this);">
 		<div id="info">
+                        <input type="button" value="INIT" id="bInit" 
+                               onclick="solidWorks.windowEventWrapper.onModeClick(this);">
+                        <input type="button" value="Rotate" id="bRot" 
+                               onclick="solidWorks.windowEventWrapper.onModeClick(this);">
+                        <input type="button" value="Panoram" id="bPan" 
+                               onclick="solidWorks.windowEventWrapper.onModeClick(this);">
+                        <input type="button" value="ZoomIn" id="bZin" 
+                               onclick="solidWorks.windowEventWrapper.onModeClick(this);">
+                        <input type="button" value="ZoomOut" id="bZout" 
+                               onclick="solidWorks.windowEventWrapper.onModeClick(this);">
+                        <input type="button" value="Camera Fitting" id="bFit" 
+                               onclick="solidWorks.stlLoader.zoomingFit();">
+                        <input type="button" value="Camera Default" id="bDef"
+                               onclick="solidWorks.stlLoader.setCameraToDefault();">
+                        <input type="button" value="Upload" id="bUpl"
+                               onclick="solidWorks.relocation.reloadWithToken('/static/html/form.html', true);">
+                        <input type="button" value="Save" id="bSave"
+                               onclick="solidWorks.relocation.stlDownload();">
+                        <div id="mouse_coordinate"> 0-0 </div>
+
+                        <!--
+                        <input type="button" value="Rotate" id="bRot" onclick="this.style.backgroundColor='#FCFCFC'">
                         <input type="button" value="INIT mode" 
 			onclick="solidWorks.windowEventWrapper.onModeClick(this);">
                         <input type="button" value="Set Camera to Default" 
@@ -16,26 +39,29 @@
                         <input type="button" value="Fir Camera" 
 			onclick="solidWorks.stlLoader.zoomingFit();">
 	                <div id="mouse_coordinate"> 0-0 </div>
-			<a href="http://threejs.org" target="_blank">three.js</a> -
-			STL loader test by <a href="https://github.com/aleeper">aleeper</a>. PR2 head from <a href="http://www.ros.org/wiki/pr2_description">www.ros.org</a>
-			<br>
 			save button
                         <input type="button" value="Save" onclick="solidWorks.relocation.stlDownload();">
                         / back to upload
                         <input type="button" value="Upload form" 
 			onclick="solidWorks.relocation.reloadWithToken('/static/html/form.html', true);">
+                        -->
                          
 		</div>
-                 
+                <div id="renderer"></div>
+                <div id="models">
+                models  <br>
+                	<select id="models_list" multiple 
+                                onDblClick="solidWorks.relocation.reloadModel(this.selectedIndex);">
+			</select> 
+                </div>                 
 		<script src="/threeJs/three.js"></script>
 
 		<script src="/threeJs/examples/js/loaders/STLLoader.js"></script>
 
 		<script src="/threeJs/examples/js/Detector.js"></script>
 		<script src="/threeJs/examples/js/libs/stats.min.js"></script>
-
+                <script src="/static/js/window_events_wrapper.js"></script>
 		<script src="/static/js/relocation_scripts.js"></script>
-		<script src="/static/js/window_events_wrapper.js"></script>
 		<script src="/static/js/url_param_parse.js"></script>
 		<script src="/static/js/stl_loader.js"></script>
 

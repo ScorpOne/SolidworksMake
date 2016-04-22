@@ -9,7 +9,7 @@ var solidWorks = solidWorks || {};
  
     solidWorks.stlLoader = {
 
-        sceneModes: {INIT: 0, PAN: 1, ZOOM: 2, ROT:3, LEN: 4},
+        sceneModes: {INIT: 0, PAN: 1, ZOOM: 2, ZOOMOUT: 3, ROT: 4, LEN: 5},
         modelPath: '/models/',
         cameraPosOffset: {'x': 0, 'y': 0, 'z': 0},
 	currentMode: 0,
@@ -18,7 +18,8 @@ var solidWorks = solidWorks || {};
         circle: false,
         radian: 0,
         mesh: null,
-
+        renderingCoof: {'width': 0.77, 'height': 0.8},
+       
         init: function() {
             var addShadowedLight = solidWorks.stlLoader.addShadowedLight;
             var onWindowResize = solidWorks.stlLoader.onWindowResize;
@@ -33,8 +34,7 @@ var solidWorks = solidWorks || {};
             stlFileName = solidWorks.relocation.reloadWithToken(stlFileName, false);
             alert('Load ' + stlFileName + ' model');
 
-            container = document.createElement( 'div' );
-            document.body.appendChild( container );
+            container = document.getElementById("renderer");
 
             camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 1, 15 );
             camera.position.set( 0, 1, 3 );
@@ -89,7 +89,9 @@ var solidWorks = solidWorks || {};
             renderer = new THREE.WebGLRenderer( { antialias: true } );
             renderer.setClearColor( scene.fog.color );
             renderer.setPixelRatio( window.devicePixelRatio );
-            renderer.setSize( window.innerWidth, window.innerHeight );
+            var renderingCoof = solidWorks.stlLoader.renderingCoof;
+            renderer.setSize(window.innerWidth * renderingCoof.width, 
+                             window.innerHeight * renderingCoof.height);
 
             renderer.gammaInput = true;
             renderer.gammaOutput = true;
@@ -142,7 +144,10 @@ var solidWorks = solidWorks || {};
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
 
-            renderer.setSize( window.innerWidth, window.innerHeight );
+            var renderingCoof = solidWorks.stlLoader.renderingCoof;
+
+            renderer.setSize(window.innerWidth * renderingCoof.width, 
+                             window.innerHeight * renderingCoof.height);
         },
 
 
@@ -284,7 +289,9 @@ var solidWorks = solidWorks || {};
             if (currentMode == sceneModes.PAN) {
                 solidWorks.stlLoader.panning(cameraPosOffset);
             } else if (currentMode == sceneModes.ZOOM && cameraPosOffset['y'] != 0) {
-                solidWorks.stlLoader.zooming(cameraPosOffset['y']);
+                solidWorks.stlLoader.zooming(Math.abs(cameraPosOffset['y']) * -1);
+            } else if (currentMode == sceneModes.ZOOMOUT && cameraPosOffset['y'] != 0) {
+                solidWorks.stlLoader.zooming(Math.abs(cameraPosOffset['y']));
             } else if (currentMode == sceneModes.ROT && (cameraPosOffset['x'] != 0 || 
                                                          cameraPosOffset['y'] != 0)) {
                 solidWorks.stlLoader.rotation(cameraPosOffset['x'], cameraPosOffset['y']);

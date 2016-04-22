@@ -13,6 +13,12 @@ var solidWorks = solidWorks || {};
                 vars[key] = value;
             });
             return vars;
+        },
+        
+
+        //getUrlVars fetchs incoming href and returns url's path part
+        getUrlPath: function(href) {
+            return href.split('?')[0];
         }
     }
 })()

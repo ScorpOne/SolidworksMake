@@ -3,10 +3,13 @@ module.exports = {
         geometry: 'server/helpers/geometry.js',
         commonFuncs: 'server/helpers/commonFunctions.js',
         tokensCalc: 'server/helpers/tokenCalculator.js',
-        redisFuncs: 'server/helpers/redisFunctions.js'
+        redisFuncs: 'server/helpers/redisFunctions.js',
+        mongoFuncs: 'server/helpers/mongoFunctions.js'
     },
     controllers: {
-        base: 'server/controllers/base-controller.js'
+        base: 'server/controllers/base-controller.js',
+        mongo: 'server/controllers/mongo-controller.js',
+        socket: 'server/controllers/socket-controller.js'
     },
     models: {
         stl: 'server/models/'

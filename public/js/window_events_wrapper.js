@@ -11,18 +11,27 @@ var solidWorks = solidWorks || {};
         startOver: false,
         prevCoordinates: {'x': 0, 'y': 0},
         cameraOffsetMutiplier: 50,
-        sceneModesNames: ['INIT mode', 'PAN mode', 'ZOOM mode', 'ROTATION mode'],
+        buttonsIdList: ['bInit', 'bRot', 'bPan', 'bZin', 'bZout'],
+        buttonsIdEvents: {'bInit': 0, 
+                          'bPan': 1,
+                          'bZin': 2, 
+                          'bZout': 3,
+                          'bRot': 4},
+
         
         onModeClick: function(button) {
-            var sceneModes = solidWorks.stlLoader.sceneModes;
-            var sceneModesNames = solidWorks.windowEventWrapper.sceneModesNames;
-            if (solidWorks.stlLoader.currentMode == (sceneModes.LEN - 1) ) {
-                solidWorks.stlLoader.currentMode = 0;
-            } else {
-                solidWorks.stlLoader.currentMode++;
+            var buttonsIdEvents = solidWorks.windowEventWrapper.buttonsIdEvents;
+            var buttonsIdList = solidWorks.windowEventWrapper.buttonsIdList;
+            for (var i = 0; i < buttonsIdList.length; i++) {
+                var buttonElem = document.getElementById(buttonsIdList[i]);
+                if (buttonElem) {
+                    buttonElem.style.backgroundColor='#FCFCFC';
+                }
             }
-            button.value = solidWorks.windowEventWrapper.sceneModesNames[solidWorks.stlLoader.currentMode];
-
+            button.style.backgroundColor='#93c2e9';
+            if (button.id in buttonsIdEvents) {
+                solidWorks.stlLoader.currentMode = buttonsIdEvents[button.id];
+            }
         },
 
 
@@ -40,6 +49,7 @@ var solidWorks = solidWorks || {};
 
         },
 
+
 	onMouseOverEvent: function(event) {
             var startOver = solidWorks.windowEventWrapper.startOver;
             var cameraOffsetMutiplier = solidWorks.windowEventWrapper.cameraOffsetMutiplier;
@@ -49,8 +59,7 @@ var solidWorks = solidWorks || {};
             var sceneModes = solidWorks.stlLoader.sceneModes;
 
             if (startOver) {
-                if (currentMode == sceneModes.PAN || currentMode == sceneModes.ZOOM ||
-                    currentMode == sceneModes.ROT) {
+                if (currentMode != sceneModes.INIT) {
                     var divEvent = document.getElementById('mouse_coordinate');
                     if (divEvent) {
                         cameraPosOffset['x'] = 

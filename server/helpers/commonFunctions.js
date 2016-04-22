@@ -129,45 +129,58 @@ exports.checkToken = function(url, urlObj) {
 
 // uploadHandler function - processes and save uploaded files
 // also prepares and returns http response 
-exports.uploadHandler = function(request, response) {
+exports.uploadHandler = function(request, response, callback) {
+    var result = {}
     var filesDict = {};
     var lastFormFileName = '';
     var stlPath = pathResolver.resolve(__dirname + '/' + pathToRoot + serverPaths.models.stl);
     console.log('>>> stl_path is ' + stlPath);
     var form = new multiparty.Form({'uploadDir': stlPath});
       
-    form.on('part', function (part) {
+    form.on('part', function(part) {
     });
 
-    form.on('file', function (name, file) {
-      console.log('>>> [file] ' + file.originalFilename );
-      console.log('>>> [file] ' + file.path);
-      console.log('>>> [file] ' + file.headers);
-      console.log('>>> [file] ' + file.size);
-      console.log('>>> [file] ' + file.data);
-      filesDict[file.originalFilename] = file.path;
-      lastFormFileName = file.originalFilename;
+    form.on('file', function(name, file) {
+        console.log('>>> [file] ' + file.originalFilename);
+        console.log('>>> [file] ' + file.path);
+        console.log('>>> [file] ' + file.headers);
+        console.log('>>> [file] ' + file.size);
+        console.log('>>> [file] ' + file.data);
+        filesDict[file.originalFilename] = file.path;
+        lastFormFileName = file.originalFilename;
+        result['fName'] = file.originalFilename;
     });
 
-    form.on('field', function (name, value) {
-      console.log('>>> [field]' + name);
+    form.on('field', function(name, value) {
+        console.log('>>> [field]' + name);
+        if (name == 'model') {
+            result['model'] = value;
+        }
     });
 
 
-    form.on('close', function () {
-      var redirectLocation = '/static/html/threeJsTest.html';
-      if (lastFormFileName != '') {
-        redirectLocation += '?stl=' + lastFormFileName;
-      }
-      var urlObj = urlParser.parse(request.url, true);
-      if ('query' in urlObj && 'token' in urlObj['query']) {
-        redirectLocation += ('&token=' + urlObj['query']['token']);
-      }
+    form.on('close', function() {
+        var redirectLocation = '/static/html/threeJsTest.html';
+        if (lastFormFileName != '') {
+            redirectLocation += '?stl=' + lastFormFileName;
+        }
+        var urlObj = urlParser.parse(request.url, true);
+        if ('query' in urlObj && 'token' in urlObj['query']) {
+            result['uid'] = urlObj['query']['token'];
+            redirectLocation += ('&token=' + urlObj['query']['token']);
+        }
 
-      renameFiles(filesDict, stlPath);
-      console.log('>>> [close] ---------------------------------');
-      response.writeHead(301, 'Moved Permanently', {'Location': redirectLocation});
-      response.end('');
+        renameFiles(filesDict, stlPath);
+        console.log('>>> [close] ---------------------------------');
+        response.writeHead(301, 'Moved Permanently', {'Location': redirectLocation});
+        response.end('');
+
+        if ('model' in result && result['model'] == '' && 'fName' in result) {
+            result['model'] = result['fName'];
+        }
+        if (callback) {
+            callback(result, response);
+        }
     });
     form.parse(request);
 }
