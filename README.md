@@ -1,3 +1,3 @@
 # SolidworksMake
 
-main nodejs scripts reposytory.
+main nodejs scripts repository.
