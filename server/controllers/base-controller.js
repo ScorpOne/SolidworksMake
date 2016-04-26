@@ -6,12 +6,11 @@ var serverPaths = require(pathToRoot + 'server/paths.js');
 var clientPaths = require(pathToRoot + 'public/paths.js');
 var commonFuncs = require(pathToRoot + serverPaths.helpers.commonFuncs);
 var redisFuncs = require(pathToRoot + serverPaths.helpers.redisFuncs);
-var mongoController = require(pathToRoot + serverPaths.controllers.mongo);
 
 var notFoundBody = '<!DOCTYPE html><html><body> your request not service by our server</body></html>';
 
 module.exports = {
-    requestProcessing: function(request, response, next){
+    requestProcessing: function(request, response, next) {
         if (commonFuncs.checkToken(request.url)) {
             next();
         } else {
@@ -22,7 +21,7 @@ module.exports = {
     },
 
 
-    modelRequestProcessing: function(request, response, next){
+    modelRequestProcessing: function(request, response, next) {
         console.log('getModels ' + request.url);
         if (commonFuncs.checkToken(request.url)) {
             next();
@@ -33,7 +32,7 @@ module.exports = {
     },
 
 
-    useRedis: function(request, response, next){
+    useRedis: function(request, response, next) {
         urlObj = urlParser.parse(request.url, false);
         console.log('useRedis ' + request.url + ' path ' + urlObj['pathname']);
         switch(urlObj['pathname']) {
@@ -50,21 +49,20 @@ module.exports = {
     },
 
 
-    getRoot: function(request, response){
+    getRoot: function(request, response) {
         console.log('getRoot ' + request.url);
         commonGetRequest(request, response, '', pathToRoot + clientPaths.clientHtmlPath + 'index.html');
     },
 
 
-    getAll: function(request, response){
-        console.log('getAll ' + request.url);
+    getAll: function(request, response) {
+        console.log('all ' + request.url);
         response.writeHead(404, 'Not Found', {'Content-Type': 'text/html'});
         response.end(notFoundBody);
     },
 
 
-    postUpload: function(request, response){
-        console.log('post ' + request.url);
-        var uploadResult = commonFuncs.uploadHandler(request, response, mongoController.mongoInserRequest);
+    getById:  function(request, response) {
+        console.log('>>> by id = ' + request.params.name);
     }
 };

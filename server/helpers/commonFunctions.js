@@ -149,6 +149,7 @@ exports.uploadHandler = function(request, response, callback) {
         filesDict[file.originalFilename] = file.path;
         lastFormFileName = file.originalFilename;
         result['fName'] = file.originalFilename;
+        result['fPath'] = file.path;
     });
 
     form.on('field', function(name, value) {
@@ -160,26 +161,24 @@ exports.uploadHandler = function(request, response, callback) {
 
 
     form.on('close', function() {
-        var redirectLocation = '/static/html/threeJsTest.html';
-        if (lastFormFileName != '') {
-            redirectLocation += '?stl=' + lastFormFileName;
+        if ('model' in result && result['model'] == '' && 'fName' in result) {
+            result['model'] = result['fName'];
         }
+        var redirectLocation = '/static/html/threeJsTest.html?stl=' + result['model'];
+
         var urlObj = urlParser.parse(request.url, true);
         if ('query' in urlObj && 'token' in urlObj['query']) {
             result['uid'] = urlObj['query']['token'];
             redirectLocation += ('&token=' + urlObj['query']['token']);
         }
 
-        renameFiles(filesDict, stlPath);
+        //renameFiles(filesDict, stlPath);
         console.log('>>> [close] ---------------------------------');
-        response.writeHead(301, 'Moved Permanently', {'Location': redirectLocation});
-        response.end('');
+        //response.writeHead(301, 'Moved Permanently', {'Location': redirectLocation});
+        //response.end('');
 
-        if ('model' in result && result['model'] == '' && 'fName' in result) {
-            result['model'] = result['fName'];
-        }
         if (callback) {
-            callback(result, response);
+            callback(result, response, redirectLocation);
         }
     });
     form.parse(request);

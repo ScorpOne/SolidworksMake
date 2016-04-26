@@ -29,29 +29,13 @@
                         <input type="button" value="Save" id="bSave"
                                onclick="solidWorks.relocation.stlDownload();">
                         <div id="mouse_coordinate"> 0-0 </div>
-
-                        <!--
-                        <input type="button" value="Rotate" id="bRot" onclick="this.style.backgroundColor='#FCFCFC'">
-                        <input type="button" value="INIT mode" 
-			onclick="solidWorks.windowEventWrapper.onModeClick(this);">
-                        <input type="button" value="Set Camera to Default" 
-			onclick="solidWorks.stlLoader.setCameraToDefault();">
-                        <input type="button" value="Fir Camera" 
-			onclick="solidWorks.stlLoader.zoomingFit();">
-	                <div id="mouse_coordinate"> 0-0 </div>
-			save button
-                        <input type="button" value="Save" onclick="solidWorks.relocation.stlDownload();">
-                        / back to upload
-                        <input type="button" value="Upload form" 
-			onclick="solidWorks.relocation.reloadWithToken('/static/html/form.html', true);">
-                        -->
                          
 		</div>
                 <div id="renderer"></div>
                 <div id="models">
                 models  <br>
                 	<select id="models_list" multiple 
-                                onDblClick="solidWorks.relocation.reloadModel(this.selectedIndex);">
+                                onDblClick="solidWorks.relocation.reloadModel(this.value);">
 			</select> 
                 </div>                 
 		<script src="/threeJs/three.js"></script>

@@ -10,7 +10,7 @@ var solidWorks = solidWorks || {};
     solidWorks.stlLoader = {
 
         sceneModes: {INIT: 0, PAN: 1, ZOOM: 2, ZOOMOUT: 3, ROT: 4, LEN: 5},
-        modelPath: '/models/',
+        modelPath: '/api/models/',
         cameraPosOffset: {'x': 0, 'y': 0, 'z': 0},
 	currentMode: 0,
         defaultCamera: {'x': 0, 'y': 1, 'z': 3},
@@ -23,47 +23,47 @@ var solidWorks = solidWorks || {};
         init: function() {
             var addShadowedLight = solidWorks.stlLoader.addShadowedLight;
             var onWindowResize = solidWorks.stlLoader.onWindowResize;
-            var stlFileName = '';
+            var stlModelName = '';
             var paramDict = solidWorks.urlParams.getUrlVars(window.location.href);
             if (! ('stl' in paramDict)) {
                 alert('no mandatory [stl] url param');
             } else {
-                stlFileName = paramDict['stl'];
+                stlModelName = paramDict['stl'];
             }
-            stlFileName = solidWorks.stlLoader.modelPath + stlFileName;
-            stlFileName = solidWorks.relocation.reloadWithToken(stlFileName, false);
-            alert('Load ' + stlFileName + ' model');
+            var stlUrl = solidWorks.stlLoader.modelPath + stlModelName;
+            stlUrl = solidWorks.relocation.reloadWithToken(stlUrl, false);
+            alert('Load ' + stlModelName + ' model');
 
             container = document.getElementById("renderer");
 
-            camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 1, 15 );
-            camera.position.set( 0, 1, 3 );
+            camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 15);
+            camera.position.set(0, 1, 3);
 
-            cameraTarget = new THREE.Vector3( 0, 0, 0 );
+            cameraTarget = new THREE.Vector3(0, 0, 0);
 
             scene = new THREE.Scene();
-            scene.fog = new THREE.Fog( 0x72645b, 2, 15 );
+            scene.fog = new THREE.Fog(0x72645b, 2, 15);
 
 
             // Ground
 
             var plane = new THREE.Mesh(
-                new THREE.PlaneBufferGeometry( 40, 40 ),
-                new THREE.MeshPhongMaterial( { color: 0x999999, specular: 0x101010 } )
+                new THREE.PlaneBufferGeometry(40, 40),
+                new THREE.MeshPhongMaterial({color: 0x999999, specular: 0x101010})
             );
             plane.rotation.x = -Math.PI/2;
             plane.position.y = -0.5;
-            scene.add( plane );
+            scene.add(plane);
 
             plane.receiveShadow = true;
 
             var loader = new THREE.STLLoader();
             THREE.Cache.clear();
 
-            loader.load(stlFileName, function ( geometry ) {
+            loader.load(stlUrl, function (geometry) {
 
-                var material = new THREE.MeshPhongMaterial( { color: 0xff5533, 
-                                                            specular: 0x111111, shininess: 200 } );
+                var material = new THREE.MeshPhongMaterial({color: 0xff5533, 
+                                                            specular: 0x111111, shininess: 200});
                 //var mesh = new THREE.Mesh( geometry, material );
                 solidWorks.stlLoader.mesh = new THREE.Mesh(geometry, material);
 
@@ -80,15 +80,15 @@ var solidWorks = solidWorks || {};
 
             // Lights
 				
-            scene.add( new THREE.HemisphereLight( 0x443333, 0x111122 ) );
+            scene.add(new THREE.HemisphereLight(0x443333, 0x111122));
 				
-            addShadowedLight( 1, 1, 1, 0xffffff, 1.35 );
-            addShadowedLight( 0.5, 1, -1, 0xffaa00, 1 );
+            addShadowedLight(1, 1, 1, 0xffffff, 1.35);
+            addShadowedLight(0.5, 1, -1, 0xffaa00, 1);
             // renderer
 
-            renderer = new THREE.WebGLRenderer( { antialias: true } );
-            renderer.setClearColor( scene.fog.color );
-            renderer.setPixelRatio( window.devicePixelRatio );
+            renderer = new THREE.WebGLRenderer({antialias: true});
+            renderer.setClearColor(scene.fog.color);
+            renderer.setPixelRatio(window.devicePixelRatio);
             var renderingCoof = solidWorks.stlLoader.renderingCoof;
             renderer.setSize(window.innerWidth * renderingCoof.width, 
                              window.innerHeight * renderingCoof.height);
@@ -99,25 +99,25 @@ var solidWorks = solidWorks || {};
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.cullFace = THREE.CullFaceBack;
 
-            container.appendChild( renderer.domElement );
+            container.appendChild(renderer.domElement);
 
             // stats
 
             stats = new Stats();
             stats.domElement.style.position = 'absolute';
             stats.domElement.style.top = '0px';
-            container.appendChild( stats.domElement );
+            container.appendChild(stats.domElement);
 
-            window.addEventListener( 'resize', onWindowResize, false );
+            window.addEventListener('resize', onWindowResize, false);
 
         },
 
 
         addShadowedLight: function(x, y, z, color, intensity ) {
 
-            var directionalLight = new THREE.DirectionalLight( color, intensity );
-            directionalLight.position.set( x, y, z );
-            scene.add( directionalLight );
+            var directionalLight = new THREE.DirectionalLight(color, intensity);
+            directionalLight.position.set(x, y, z);
+            scene.add(directionalLight);
 
             directionalLight.castShadow = true;
             // directionalLight.shadowCameraVisible = true;
@@ -167,7 +167,7 @@ var solidWorks = solidWorks || {};
 
         animate: function() {
             var render = solidWorks.stlLoader.render;
-            window.requestAnimationFrame( solidWorks.stlLoader.animate );
+            window.requestAnimationFrame(solidWorks.stlLoader.animate);
 
             render();
             stats.update();
@@ -300,9 +300,9 @@ var solidWorks = solidWorks || {};
             cameraPosOffset['y'] = 0;
             cameraPosOffset['z'] = 0;
              
-            camera.lookAt( cameraTarget );
+            camera.lookAt(cameraTarget);
 
-            renderer.render( scene, camera );
+            renderer.render(scene, camera);
 
         }
     };

@@ -6,9 +6,8 @@ var solidWorks = solidWorks || {};
 
     solidWorks.relocation = {
 
-        modelPath: '/models/',
+        modelPath: '/api/models',
         xhttp: null,
-        modelsFList: [],
 
         reloadWithToken: function(newLocation, reloadWindow) {
             alert('>>> token is: ' + newLocation);
@@ -30,7 +29,7 @@ var solidWorks = solidWorks || {};
             var action = solidWorks.relocation.modelPath;
             var paramDict = solidWorks.urlParams.getUrlVars(window.location.href);
             if ('stl' in paramDict) {
-                action += paramDict['stl'];
+                action += ('?stl=' + paramDict['stl']);
             }
             solidWorks.relocation.reloadWithToken(action, true);
         },
@@ -55,15 +54,12 @@ var solidWorks = solidWorks || {};
             var xhttp = solidWorks.relocation.xhttp;
             if (xhttp.readyState == 4 && xhttp.status == 200) {
                 var models = xhttp.responseText.split(':');
-                if (models.length > 0) {
-                    var select = document.getElementById('models_list');
-                    for (var i = 0; i < (models.length/2); i++) {
+                var select = document.getElementById('models_list');
+                if (models.length > 0 && select) {                            
+                    for (var i = 0; i < models.length; i++) {
                         var opt = document.createElement('option');
-                        opt.text = models[i*2];
+                        opt.text = models[i];
                         select.add(opt);
-                        if ((i*2+1) < models.length) {
-                          solidWorks.relocation.modelsFList.push(models[i*2+1]);
-                        }
                     }
                 }
             }
@@ -82,19 +78,18 @@ var solidWorks = solidWorks || {};
             if (localStorage && 'token' in localStorage) {
                 token = localStorage['token'];
             }
-            xhttp.open('GET', '/api/modelsList?token='+token, true);
+            alert(solidWorks.relocation.modelPath+'?token='+token);
+            xhttp.open('GET', solidWorks.relocation.modelPath+'?token='+token, true);
+            //xhttp.open('GET', 'http://127.0.0.1:8124/api/models/?token='+token, true);
             xhttp.send();
         },
 
         
-        reloadModel: function(index) {
+        reloadModel: function(modelName) {
             //alert('index = ' + index);
-            var modelsFList = solidWorks.relocation.modelsFList;
-            if (index < modelsFList.length) {
-                var urlPath = solidWorks.urlParams.getUrlPath(window.location.href);
-                urlPath += ('?stl='+modelsFList[index]);
-                solidWorks.relocation.reloadWithToken(urlPath, true);
-            }
+            var urlPath = solidWorks.urlParams.getUrlPath(window.location.href);
+            urlPath += ('?stl='+modelName);
+            solidWorks.relocation.reloadWithToken(urlPath, true);
         }
 
     };
